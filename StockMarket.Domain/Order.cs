@@ -15,9 +15,14 @@
             this.price = price;
         }
 
-        public long Id { get => id; set => id = value; }
-        public decimal Price { get => price; set => price = value; }
-        public decimal Quantity { get => quantity; set => quantity = value; }
-        public TradeSide TradeSide { get => tradeSide; set => tradeSide = value; }
+        internal void DecreaseQuantity(decimal decreaseAmount)
+        {
+            quantity -= decreaseAmount;
+        }
+
+        public long Id { get => id; }
+        public decimal Price { get => price; }
+        public decimal Quantity { get => quantity; private set => quantity = value; }
+        public TradeSide TradeSide { get => tradeSide; }
     }
 }
