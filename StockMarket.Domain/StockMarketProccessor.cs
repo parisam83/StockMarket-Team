@@ -23,14 +23,15 @@ namespace StockMarket.Domain
             this.sellOrders = new PriorityQueue<Order, Order>(new MinComparer());
         }
 
-        public void EnqueueOrder(TradeSide tradeSide, decimal quantity, decimal price)
+        public long EnqueueOrder(TradeSide tradeSide, decimal quantity, decimal price)
         {
             Interlocked.Increment(ref lastOrderId);
             var order = new Order(lastOrderId, tradeSide, quantity, price);
             orders.Add(order);
 
-            if (tradeSide == TradeSide.Buy)proccessBuyOrder(order);
+            if (tradeSide == TradeSide.Buy) proccessBuyOrder(order);
             else proccessSellOrder(order);
+            return order.Id;
         }
 
         private void proccessBuyOrder(Order order)
