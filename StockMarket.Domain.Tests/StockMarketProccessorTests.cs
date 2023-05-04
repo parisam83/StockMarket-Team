@@ -18,7 +18,6 @@ namespace StockMarket.Domain.Tests
             // Assert
             Assert.Equal(2, sut.Orders.Count());
             Assert.Equal(1, sut.Trades.Count());
-
         }
     }
 }
