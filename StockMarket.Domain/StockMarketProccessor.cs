@@ -18,10 +18,10 @@ namespace StockMarket.Domain
         public StockMarketProccessor(long lastOrderId = 0)
         {
             this.lastOrderId = lastOrderId;
-            this.orders = new List<Order>();
-            this.trades = new List<Trade>();
-            this.buyOrders = new PriorityQueue<Order, Order>(new MaxComparer());
-            this.sellOrders = new PriorityQueue<Order, Order>(new MinComparer());
+            orders = new();
+            trades = new();
+            buyOrders = new(new MaxComparer());
+            sellOrders = new(new MinComparer());
         }
 
         public long EnqueueOrder(TradeSide tradeSide, decimal quantity, decimal price)
