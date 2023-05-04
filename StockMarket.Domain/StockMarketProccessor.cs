@@ -7,16 +7,18 @@ namespace StockMarket.Domain
     {
         private long lastOrderId;
         private long lastTradeId;
-        public readonly List<Order> Orders;
-        public readonly List<Trade> Trades;
+        public readonly List<Order> orders;
+        public readonly List<Trade> trades;
         private readonly PriorityQueue<Order, Order> buyOrders;
         private readonly PriorityQueue<Order, Order> sellOrders;
 
+        public IEnumerable<Order> Orders => orders;
+        public IEnumerable<Trade> Trades => trades;
         public StockMarketProccessor(long lastOrderId = 0)
         {
             this.lastOrderId = lastOrderId;
-            this.Orders = new List<Order>();
-            this.Trades = new List<Trade>();
+            this.orders = new List<Order>();
+            this.trades = new List<Trade>();
             this.buyOrders = new PriorityQueue<Order, Order>(new MaxComparer());
             this.sellOrders = new PriorityQueue<Order, Order>(new MinComparer());
         }
@@ -25,7 +27,7 @@ namespace StockMarket.Domain
         {
             Interlocked.Increment(ref lastOrderId);
             var order = new Order(lastOrderId, tradeSide, quantity, price);
-            Orders.Add(order);
+            orders.Add(order);
 
             if (tradeSide == TradeSide.Buy)proccessBuyOrder(order);
             else proccessSellOrder(order);
@@ -59,7 +61,7 @@ namespace StockMarket.Domain
 
             Interlocked.Increment(ref lastTradeId);
             var trade = new Trade(lastTradeId, buyOrder.Id, sellOrder.Id, quantityToDecrease, sellOrder.Price);
-            Trades.Add(trade);
+            trades.Add(trade);
 
             buyOrder.DecreaseQuantity(quantityToDecrease);
             sellOrder.DecreaseQuantity(quantityToDecrease);
