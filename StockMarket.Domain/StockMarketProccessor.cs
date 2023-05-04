@@ -35,28 +35,6 @@ namespace StockMarket.Domain
             return order.Id;
         }
 
-        private void proccessBuyOrder(Order order)
-        {
-            /*while (sellOrders.Count > 0 && order.Quantity > 0 && sellOrders.Peek().Price <= order.Price)
-            {
-                makeTrade(order, sellOrders.Peek());
-                if (sellOrders.Peek().Quantity == 0)
-                    sellOrders.Dequeue();
-            }
-            if (order.Quantity > 0) buyOrders.Enqueue(order, order);*/
-        }
-
-        private void proccessSellOrder(Order order)
-        {
-            /*while (buyOrders.Count > 0 && order.Quantity > 0 && buyOrders.Peek().Price >= order.Price)
-            {
-                makeTrade(buyOrders.Peek(), order);
-                if (buyOrders.Peek().Quantity == 0)
-                    buyOrders.Dequeue();
-            }
-            if (order.Quantity > 0) sellOrders.Enqueue(order, order);*/
-        }
-
         private void matchOrder(Order order, PriorityQueue<Order, Order> orders, PriorityQueue<Order, Order> matchingOrders, Func<decimal, decimal, bool> comparePriceDeligate)
         {
             while (matchingOrders.Count > 0 && order.Quantity > 0 && comparePriceDeligate(order.Price, matchingOrders.Peek().Price))
