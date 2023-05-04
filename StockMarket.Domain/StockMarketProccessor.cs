@@ -73,7 +73,7 @@ namespace StockMarket.Domain
 
         private void makeTrade(Order order1, Order order2)
         {
-            var matchingOrders = findOrders(order1, order2);
+            var matchingOrders = FindOrders(order1, order2);
             var buyOrder = matchingOrders.BuyOrder;
             var sellOrder = matchingOrders.SellOrder;
 
@@ -87,7 +87,7 @@ namespace StockMarket.Domain
             sellOrder.DecreaseQuantity(minQuantity);
         }
 
-        private static (Order BuyOrder, Order SellOrder) findOrders(Order order1, Order order2)
+        private static (Order BuyOrder, Order SellOrder) FindOrders(Order order1, Order order2)
         {
             if (order1.TradeSide == TradeSide.Buy) return (BuyOrder: order1, SellOrder: order2);
             else return (BuyOrder: order2, SellOrder: order1);
