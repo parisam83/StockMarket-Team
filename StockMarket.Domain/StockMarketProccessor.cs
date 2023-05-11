@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System.Linq.Expressions;
 using System.Text.Json.Nodes;
 
 namespace StockMarket.Domain
@@ -9,7 +10,6 @@ namespace StockMarket.Domain
         private long lastTradeId;
         private readonly List<Order> orders;
         private readonly List<Trade> trades;
-        private readonly List<Order> canceledOrders;
         private readonly PriorityQueue<Order, Order> buyOrders;
         private readonly PriorityQueue<Order, Order> sellOrders;
 
@@ -21,7 +21,6 @@ namespace StockMarket.Domain
             this.lastOrderId = lastOrderId;
             orders = new();
             trades = new();
-            canceledOrders = new();
             buyOrders = new(new MaxComparer());
             sellOrders = new(new MinComparer());
         }
@@ -42,9 +41,8 @@ namespace StockMarket.Domain
             while (matchingOrders.Count > 0 && order.Quantity > 0 && comparePriceDeligate(order.Price, matchingOrders.Peek().Price))
             {
                 var peekedOrder = matchingOrders.Peek();
-
+                if (peekedOrder.IsCanceled) matchingOrders.Dequeue();
                 makeTrade(order, peekedOrder);
-
                 if (peekedOrder.Quantity == 0) matchingOrders.Dequeue();
             }
 
@@ -53,8 +51,6 @@ namespace StockMarket.Domain
 
         private void makeTrade(Order order1, Order order2)
         {
-            if (order1.IsCanceled || order2.IsCanceled) return;
-
             var matchingOrders = FindOrders(order1, order2);
             var buyOrder = matchingOrders.BuyOrder;
             var sellOrder = matchingOrders.SellOrder;
@@ -77,19 +73,8 @@ namespace StockMarket.Domain
 
         public void CancelOrder(long orderId)
         {
-            Order? orderToCancel = findOrderById(orderId);
-            if (orderToCancel == null) return;
-
-            orderToCancel.IsCanceled = true;
-            canceledOrders.Add(orderToCancel);
-        }
-
-        private Order? findOrderById(long orderId)
-        {
-            foreach (var order in orders)
-                if (order.Id == orderId)
-                    return order;
-            return null;
+            var order = orders.Single(order => order.Id == orderId);
+            order.Cancel();
         }
     }
 }

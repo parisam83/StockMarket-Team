@@ -75,7 +75,7 @@ namespace StockMarket.Domain.Tests
         }
 
         [Fact]
-        public void CancelOrder_Should_Cancel_Order()
+        public void CancelOrder_Should_Cancel_Order_Test()
         {
             // Arrange
             var sut = new StockMarketProccessor();
@@ -89,6 +89,20 @@ namespace StockMarket.Domain.Tests
             {
                 isCanceled = true
             });
+        }
+
+        [Fact]
+        public void CancelOrder_Should_Not_Process_Order_When_Peeked_MatchingOrder_Is_Canceled_Test()
+        {
+            // Arrange
+            var sut = new StockMarketProccessor();
+            var orderId = sut.EnqueueOrder(tradeSide: TradeSide.Sell, quantity: 1, price: 1400);
+
+            // Act
+            sut.CancelOrder(orderId);
+
+            // Assert
+            Assert.Empty(sut.Trades);
         }
     }
 }

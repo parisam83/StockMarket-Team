@@ -22,6 +22,11 @@
             quantity -= decreaseAmount;
         }
 
+        internal void Cancel()
+        {
+            isCanceled = true;
+        }
+
         public long Id { get => id; }
         public decimal Price { get => price; }
         public decimal Quantity { get => quantity; private set => quantity = value; }
