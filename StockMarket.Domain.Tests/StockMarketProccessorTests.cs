@@ -73,5 +73,22 @@ namespace StockMarket.Domain.Tests
                 Price = 1400M
             });
         }
+
+        [Fact]
+        public void CancelOrder_Should_Cancel_Order()
+        {
+            // Arrange
+            var sut = new StockMarketProccessor();
+            var orderId = sut.EnqueueOrder(tradeSide: TradeSide.Sell, quantity: 1, price: 1400);
+
+            // Act
+            sut.CancelOrder(orderId);
+
+            // Assert
+            sut.Orders.First().Should().BeEquivalentTo(new
+            {
+                isCanceled = true
+            });
+        }
     }
 }

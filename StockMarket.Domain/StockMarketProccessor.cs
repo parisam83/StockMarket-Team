@@ -9,6 +9,7 @@ namespace StockMarket.Domain
         private long lastTradeId;
         private readonly List<Order> orders;
         private readonly List<Trade> trades;
+        private readonly List<Order> canceledOrders;
         private readonly PriorityQueue<Order, Order> buyOrders;
         private readonly PriorityQueue<Order, Order> sellOrders;
 
@@ -20,6 +21,7 @@ namespace StockMarket.Domain
             this.lastOrderId = lastOrderId;
             orders = new();
             trades = new();
+            canceledOrders = new();
             buyOrders = new(new MaxComparer());
             sellOrders = new(new MinComparer());
         }
@@ -51,6 +53,8 @@ namespace StockMarket.Domain
 
         private void makeTrade(Order order1, Order order2)
         {
+            if (order1.IsCanceled || order2.IsCanceled) return;
+
             var matchingOrders = FindOrders(order1, order2);
             var buyOrder = matchingOrders.BuyOrder;
             var sellOrder = matchingOrders.SellOrder;
@@ -69,6 +73,23 @@ namespace StockMarket.Domain
         {
             if (order1.TradeSide == TradeSide.Buy) return (BuyOrder: order1, SellOrder: order2);
             else return (BuyOrder: order2, SellOrder: order1);
+        }
+
+        public void CancelOrder(long orderId)
+        {
+            Order? orderToCancel = findOrderById(orderId);
+            if (orderToCancel == null) return;
+
+            orderToCancel.IsCanceled = true;
+            canceledOrders.Add(orderToCancel);
+        }
+
+        private Order? findOrderById(long orderId)
+        {
+            foreach (var order in orders)
+                if (order.Id == orderId)
+                    return order;
+            return null;
         }
     }
 }

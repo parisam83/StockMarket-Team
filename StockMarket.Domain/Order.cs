@@ -6,6 +6,7 @@
         private TradeSide tradeSide;
         private decimal quantity;
         private decimal price;
+        private bool isCanceled;
 
         internal Order(long id, TradeSide tradeSide, decimal quantity, decimal price)
         {
@@ -13,6 +14,7 @@
             this.tradeSide = tradeSide;
             this.quantity = quantity;
             this.price = price;
+            IsCanceled = false;
         }
 
         internal void DecreaseQuantity(decimal decreaseAmount)
@@ -24,5 +26,6 @@
         public decimal Price { get => price; }
         public decimal Quantity { get => quantity; private set => quantity = value; }
         public TradeSide TradeSide { get => tradeSide; }
+        public bool IsCanceled { get => isCanceled; set => isCanceled = value; }
     }
 }
