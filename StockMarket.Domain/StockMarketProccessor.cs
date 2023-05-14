@@ -4,10 +4,11 @@ using System.Text.Json.Nodes;
 
 namespace StockMarket.Domain
 {
-    public class StockMarketProccessor
+    public class StockMarketProccessor : IStockMarketProccessor
     {
         private long lastOrderId;
         private long lastTradeId;
+        private MarketState state;
         private readonly List<Order> orders;
         private readonly List<Trade> trades;
         private readonly PriorityQueue<Order, Order> buyOrders;
@@ -21,12 +22,15 @@ namespace StockMarket.Domain
             this.lastOrderId = lastOrderId;
             orders = new();
             trades = new();
+            state = new OpenState(this);
             buyOrders = new(new MaxComparer());
             sellOrders = new(new MinComparer());
         }
 
         public long EnqueueOrder(TradeSide tradeSide, decimal quantity, decimal price)
         {
+            state.EnqueueOrder(tradeSide, quantity, price);
+
             Interlocked.Increment(ref lastOrderId);
             var order = new Order(lastOrderId, tradeSide, quantity, price);
             orders.Add(order);
@@ -34,6 +38,22 @@ namespace StockMarket.Domain
             if (tradeSide == TradeSide.Buy) matchOrder(order, buyOrders, sellOrders, (decimal price1, decimal price2) => price1 >= price2);
             else matchOrder(order, sellOrders, buyOrders, (decimal price1, decimal price2) => price1 <= price2);
             return order.Id;
+        }
+        public void CancelOrder(long orderId)
+        {
+            // if (state == StockMarketState.close) return;
+
+            var order = orders.Single(order => order.Id == orderId);
+            order.Cancel();
+        }
+        public void CloseMarket()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OpenMarket()
+        {
+            throw new NotImplementedException();
         }
 
         private void matchOrder(Order order, PriorityQueue<Order, Order> orders, PriorityQueue<Order, Order> matchingOrders, Func<decimal, decimal, bool> comparePriceDeligate)
@@ -71,10 +91,19 @@ namespace StockMarket.Domain
             else return (BuyOrder: order2, SellOrder: order1);
         }
 
-        public void CancelOrder(long orderId)
+        internal long Enqueue(TradeSide tradeSide, decimal quantity, decimal price)
         {
-            var order = orders.Single(order => order.Id == orderId);
-            order.Cancel();
+            throw new NotImplementedException();
+        }
+
+        internal void Close()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Open()
+        {
+            throw new NotImplementedException();
         }
     }
 }

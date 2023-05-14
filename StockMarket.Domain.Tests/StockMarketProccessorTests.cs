@@ -75,6 +75,48 @@ namespace StockMarket.Domain.Tests
         }
 
         [Fact]
+        public void EnqueueOrder_Should_Proccess_SellOrder_When_Multiple_BuyOrders_Are_Already_Enqueued_Test()
+        {
+
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Proccess_BuyOrder_When_Multiple_SellOrders_Are_Already_Enqueued_Test()
+        {
+
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Proccess_SellOrder_When_Some_BuyOrders_Are_Matched_Enqueued_Test() 
+        { 
+
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Proccess_BuyOrder_When_Some_SellOrders_Are_Matched_Enqueued_Test()
+        {
+
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Not_Proccess_BuyOrder_When_No_SellOrders_Are_Matched_Test()
+        {
+
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Not_Proccess_SellOrder_When_No_BuyOrders_Are_Matched_Test()
+        {
+
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Proccess_BuyOrder_When_Demand_Is_More_Than_Supply_Test()
+        {
+
+        }
+
+        [Fact]
         public void CancelOrder_Should_Cancel_Order_Test()
         {
             // Arrange
@@ -103,6 +145,75 @@ namespace StockMarket.Domain.Tests
 
             // Assert
             Assert.Empty(sut.Trades);
+        }
+
+        [Fact]
+        public void CloseMarket_Should_Close_StockMarket_Test()
+        {
+            // Arrange
+            var sut = new StockMarketProccessor();
+
+            // Act
+            sut.CloseMarket();
+
+            // Assert
+            Assert.Equal(sut.state, StockMarketState.close);
+        }
+
+        [Fact]
+        public void EnqueueOrder_Should_Not_Work_When_StockMarket_Is_Closed_Test()
+        {
+            // Arrange
+            var sut = new StockMarketProccessor();
+            sut.CloseMarket();
+
+            // Act
+            void act() => sut.EnqueueOrder(tradeSide: TradeSide.Buy, quantity: 1, price: 1500);
+
+            // Assert
+            Assert.Throws<NotImplementedException>(act);
+        }
+
+        [Fact]
+        public void CancelOrder_Should_Not_Work_When_StockMarket_Is_Closed_Test()
+        {
+            // Arrange
+            var sut = new StockMarketProccessor();
+            var orderId = sut.EnqueueOrder(tradeSide: TradeSide.Buy, quantity: 1, price: 1500);
+            sut.CloseMarket();
+
+            // Act
+            sut.CancelOrder(orderId);
+
+            // Assert
+            sut.Orders.First().Should().BeEquivalentTo(new
+            {
+                isCanceled = false
+            });
+        }
+
+        [Fact]
+        public void 
+        // TODO: state logic tests!
+
+        [Fact]
+        public void ModifyOrder_Test()
+        {
+            // buy order
+            // sell order : doesn't match with sell order
+            // buy order modifies so that the orders match
+        }
+
+        [Fact]
+        public void ModifyOrder_Should_Not_Work_When_StockMarket_Is_Closed_Test()
+        {
+
+        }
+
+        [Fact]
+        public void ModifyOrder_Should_Work_When_StockMarket_Is_Opened_Test()
+        {
+
         }
     }
 }
